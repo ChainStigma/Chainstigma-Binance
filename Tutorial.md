@@ -24,7 +24,7 @@
 #### 2. Create `Limit sell order`*
 ##### * after sending a request the ID appear 
 #### 3. Get all Infos about order*
-#### 4. Canceled the entered order*
+#### 4. Cancel the entered order*
 ##### *You can mark with double click the order-ID in the Buy, Sell or Info Box. And the `ADD` Button add it in the entry 
 
 ![tutorial_1](./IMG/tut_4.jpg)
