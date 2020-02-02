@@ -1,18 +1,12 @@
-# Welcome to ETG (Easy-Trading-GUI) for Binance v.1.0
+# Welcome to v0.1 of Chainstigma Binance trading-
 
-
-Graphical User Interface for trading via REST API.
-
-![pyversion](./IMG/py.png)
 
 ## Note
 
-This is a manuel trading GUI for Binance, which is created with Python Tkinter module.
+This is a manual trading GUI for Binance, which is created with Python Tkinter module.
 
-Make easy to set an Order via REST API or get the Realtime Asset Price.
-
-
-![tutorial](./IMG/tut_raw.jpg)
+Make easy to set an Order via REST API, get the Realtime Asset Price and set auto take profit and trailing stop loss.
+This is based on Frosti2020 version and it's still under construction and testing
 
 
 ## Features
@@ -26,7 +20,7 @@ Make easy to set an Order via REST API or get the Realtime Asset Price.
 - Some calculators for fast calculate
 - No unknown libraries
 - One File/Script `ETG_binance_v1_0.py` (easy to look over)
-
+- loop Get order info and set trailing stop loss and take profit 
 
 
 ## Requirements
@@ -40,17 +34,9 @@ Make easy to set an Order via REST API or get the Realtime Asset Price.
     import hashlib
     import hmac
 ```
-###  Binance Account
-#### Create a Binance Account and activate an API-Key
-
-[https://www.binance.com/de/register?ref=36368250](https://www.binance.com/de/register?ref=36368250)
-
 ## Tutorial Guide
 
-Please check the Guide before use
-
-[Tutorial.md](./Tutorial.md)
-
+A tutorial guide will be posted later
 
 ## Donate
 
@@ -58,17 +44,12 @@ Feel free to support my motivation for new Updates:
 
 | Asset   | ADDRESS                                     |
 |-------- |-------------------------------------------- |
-| BTC     | 14W14xpdy7qSQsJA8koPbLSNV7pS231Mvr          |
-| ETH     | 0xC030B5176057fc234B73A315204d92631B649bD1  |
-| BNB     | bnb1eezams8lr74c8tzrw2f3shnzkfl9qxw6dxf7vh  |
-| BCH     | qzh286hdvn97hrxprlr6q8sqzrxgkselnqcg890a4x  |
-| LTC     | LZPZ5KKb3tgoihPSEjnhbn8brggrsDEFnE          |
+| BTC     |           
+| ETH     |   
+| BNB     | 
+| BCH     | 
+| LTC     | 
 
-## Kontakt
+## Contact
 
-Please Kontakt me for Feedback, Ideas and Questions.
-
-![Telegram](./IMG/telegram.jpg)
-
-`@Frosti_ger`
-
+After finishing a contact for further discussion will be post later
