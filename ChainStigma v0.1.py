@@ -9,7 +9,7 @@ import hmac
 # Config
 if 1==1:
 
-    start_asset1 = "ETH"
+    start_asset1 = "BTC"
     start_asset2 = "USDT"
     
     # Color
@@ -18,14 +18,16 @@ if 1==1:
 
 # Tkinter start
 root = tk.Tk()
-root.title ("ETG v1.0 for Binance")
-root.geometry ("1110x615+350+100")
+# This program is based on Frosti2020
+root.title ("ChainStigma Binance Trader")
+#root.geometry ("1110x615+350+100")
+root.geometry ("1110x615")
 root.resizable(0, 0)
 
 # Main Assets
 if 1==1:
     
-    coord_x = 450
+    coord_x = 10
     coord_y = 20
 
     # Background
@@ -35,7 +37,7 @@ if 1==1:
     def asset_load():
 
         try:
-            save_file = open ("etg_binance.txt").read()
+            save_file = open ("chain_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -102,7 +104,7 @@ if 1==1:
     def asset_save():
         
         try:
-            save_file = open ("etg_binance.txt").read()
+            save_file = open ("chain_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -137,7 +139,7 @@ if 1==1:
             t_save.insert ("10.0", e_main_asset2.get() + "\n")
 
         # Save
-        new_save = open ("etg_binance.txt" , "w")
+        new_save = open ("chain_binance.txt" , "w")
         new_save.write (t_save.get("1.0", "13.0"))
         new_save.close()
 
@@ -158,10 +160,74 @@ if 1==1:
     l_next = tk.Label(root, text="0", font=('Courier New', 16, 'bold'),relief="ridge", bg="#66CCFF")
     l_next.place (x=coord_x + 92, y=coord_y + 5, width=26, height=26)
 
-    l_credit = tk.Label(root, text="Github: Frosti2020", font=('Courier New', 10, 'bold'))
-    l_credit.place (x=coord_x + 210, y=coord_y + 50, height=18)
+if 1==1:
 
+    coord_x = 230
+    coord_y = 20
+    running_cancel = False
 
+    # Background
+    bg_main_loop = tk.Label (root, relief="ridge", bg="#559900")
+    bg_main_loop.place (x=coord_x, y=coord_y, width=200, height=65)
+
+    class thread_start_price(Thread):
+        def run(self):
+            global running
+            global running_cancel
+            t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Started\n")
+            while (running == True):
+                url_price = "https://api.binance.com/api/v1/ticker/price?symbol=" + e_main_asset1.get().upper() + e_main_asset2.get().upper()
+   
+                try:
+                    r = requests.get(url=url_price, timeout=4)
+
+                    the_price = r.json() ["price"]
+                
+                # Cut Zero and point at end of price
+                    while the_price[-1] == "0":
+                        the_price = the_price[:-1]
+                    if the_price[-1] == ".":
+                        the_price = the_price[:-1]
+
+                    loop_price.delete (0, "end")
+                    loop_price.insert (0, the_price)
+
+                # Confirmation
+                    b_main_loop_start.configure (bg="green")
+                    time.sleep (0.2)
+                    b_main_loop_start.configure (bg="#FFCC99")
+
+                    time.sleep(10)
+                    if (running_cancel == True):
+                        break
+
+                except Exception as e:
+
+                    t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S") + "  <GET PRICE FAIL>\nEXCEPTION: " + str(e) + "\nRESPONSE: " + r.text + "\n\n")
+            else:
+                t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Stopped\n")
+                
+
+    def get_price_start():
+        global running
+        running = True
+        price_start = thread_start_price()
+        price_start.start()
+    
+    def get_price_stop():
+        global running
+        running = False
+        running_cancel = True
+        loop_price.delete (0, "end")
+
+    b_main_loop_start = tk.Button (root, font=('Courier New', 10, 'bold'), text="START", command=get_price_start)
+    b_main_loop_start.place (x=coord_x + 25, y=coord_y + 10, width=60, height=20)
+
+    b_main_loop_stop = tk.Button (root, font=('Courier New', 10, 'bold'), text="STOP", command=get_price_stop)
+    b_main_loop_stop.place (x=coord_x + 115, y=coord_y + 10, width=60, height=20)
+
+    loop_price = tk.Entry(root, font=('Courier New', 14, 'bold'))
+    loop_price.place(x=coord_x + 25, y=coord_y + 32, width=150, height=25)
 
 # Price
 if 1==1:
@@ -364,6 +430,7 @@ if 1==1:
                 if check_funds == 1:
                     t_log.insert ("1.0", "ALL FUNDS:\n")
                     t_log.insert ("1.0", time.strftime(" <%d.%m.%y %H:%M:%S>") + "\n\n", "bg_time")
+                   
 
                 check_funds = 0
 
@@ -1080,6 +1147,33 @@ if 1==1:
     e_timesync = tk.Entry (root, font=('Courier New', 10, 'bold'))
     e_timesync.place (x=coord_x + 120, y=coord_y + 10, width=170, height=23)
 
+# Buttons
+if 1==1:
+
+    coord_x = 10
+    coord_y = 630
+
+    def scanning():
+        if running:
+             t_log.insert ("1.0", "scanning")
+        
+        tk.after(1000, scanning)
+        
+    def start():
+        global running
+        running == True
+        t_log.insert ("1.0", "scanning")
+
+    def stop():
+        global running
+        running == False
+
+    b_start = tk.Button (root, font=('Courier New', 10, 'bold'), text="START", command=start)
+    b_start.place (x=coord_x, y=coord_y, height=18)
+    
+    b_cancel = tk.Button (root, font=('Courier New', 10, 'bold'), text="CANCEL", command=stop)
+    b_cancel.place (x=coord_x + 100, y=coord_y, height=18)
+
 # Log Textfield
 if 1==1:
 
@@ -1100,7 +1194,7 @@ if 1==1:
     t_log.tag_config ("bg_funds", background="#99CC99" )
     t_log.tag_config ("bg_cancel", background="#e7d7cc" )
 
-    #Temp Textfield for load etg_binance.txt
+    #Temp Textfield for load chain_binance.txt
     t_save = tk.Text (root)
 
 # Request Textfield
@@ -1108,29 +1202,6 @@ if 1==1:
 
     t_request = tk.Text (root,  font=('Courier New', 9, 'bold'), bg="#d0d0d0")
     t_request.place(x=10, y=455, width=850, height=150)
-
-# Time
-if 1==1:
-
-    l_time = tk.Label(root, font=('Courier New', 20, 'bold'))
-    l_time.place (x=15, y=20)
-
-    class thread_time(Thread):
-        def run(self):
-
-            global end_thread_time
-            end_thread_time = 1 
-            
-            while end_thread_time == 1:
-                try:
-                    zeit = (time.strftime("%H:%M:%S"))
-                    l_time.configure(text=zeit)
-                    time.sleep(1)
-                except:
-                    pass
-    
-    tt = thread_time()
-    tt.start()
 
 # Keys
 if 1==1:
@@ -1150,7 +1221,7 @@ if 1==1:
     def keys_load():
 
         try:
-            save_file = open ("etg_binance.txt").read()
+            save_file = open ("chain_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -1171,7 +1242,7 @@ if 1==1:
     def keys_save():
     
         try:
-            save_file = open ("etg_binance.txt").read()
+            save_file = open ("chain_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -1186,7 +1257,7 @@ if 1==1:
         t_save.insert ("11.0", e_ak.get())
         t_save.insert ("12.0", e_sk.get())
 
-        new_save = open ("etg_binance.txt" , "w")
+        new_save = open ("chain_binance.txt" , "w")
         new_save.write (t_save.get("1.0", "13.0"))
         new_save.close()
 
@@ -1210,79 +1281,6 @@ if 1==1:
 
     b_keys_load = tk.Button(root, text="LOAD", bg="#d0d0d0", command=keys_load)
     b_keys_load.place (x=coord_x + 880 , y=coord_y + 25, width=50, height=18)
-
-# Donation
-if 1==1:
-
-    coord_x = 10
-    coord_y = 690
-
-    def c_btc():
-        root.clipboard_clear()
-        root.clipboard_append(l_btc_adress.cget ("text"))
-    def c_eth():
-        root.clipboard_clear()
-        root.clipboard_append(l_eth_adress.cget ("text"))
-    def c_bnb():
-        root.clipboard_clear()
-        root.clipboard_append(l_bnb_adress.cget ("text"))
-    def c_bch():
-        root.clipboard_clear()
-        root.clipboard_append(l_bch_adress.cget ("text"))
-    def c_ltc():
-        root.clipboard_clear()
-        root.clipboard_append(l_ltc_adress.cget ("text"))
-
-    l_donate = tk.Label (root, text="Support:", font=('Courier New', 10, 'bold'))
-    l_donate.place (x=coord_x , y=coord_y, height=18)
-
-    l_btc = tk.Label (root, text="BTC:", font=('Courier New', 10, 'bold'))
-    l_btc.place (x=coord_x , y=coord_y + 25, height=18)
-
-    l_btc_adress = tk.Label (root, text="14W14xpdy7qSQsJA8koPbLSNV7pS231Mvr", font=('Courier New', 10, 'bold'))
-    l_btc_adress.place (x=coord_x + 50 , y=coord_y + 25, height=18)
-
-    b_btc = tk.Button(root, text="Copy", font=('Courier New', 10, 'bold'), bg="#d0d0d0", command=c_btc)
-    b_btc.place (x=coord_x + 480 , y=coord_y + 25, width=50, height=18)
-    
-    l_eth = tk.Label (root, text="ETH:", font=('Courier New', 10, 'bold'))
-    l_eth.place (x=coord_x , y=coord_y + 45, height=18)
-
-    l_eth_adress = tk.Label (root, text="0xC030B5176057fc234B73A315204d92631B649bD1", font=('Courier New', 10, 'bold'))
-    l_eth_adress.place (x=coord_x + 50 , y=coord_y + 45, height=18)
-
-    b_eth = tk.Button(root, text="Copy", font=('Courier New', 10, 'bold'), bg="#d0d0d0", command=c_eth)
-    b_eth.place (x=coord_x + 480 , y=coord_y + 45, width=50, height=18)
-    
-    l_bnb = tk.Label (root, text="BNB:", font=('Courier New', 10, 'bold'))
-    l_bnb.place (x=coord_x , y=coord_y + 65, height=18)
-
-    l_bnb_adress = tk.Label (root, text="bnb1eezams8lr74c8tzrw2f3shnzkfl9qxw6dxf7vh", font=('Courier New', 10, 'bold'))
-    l_bnb_adress.place (x=coord_x + 50 , y=coord_y + 65, height=18)
-
-    b_bnb = tk.Button(root, text="Copy", font=('Courier New', 10, 'bold'), bg="#d0d0d0", command=c_bnb)
-    b_bnb.place (x=coord_x + 480 , y=coord_y + 65, width=50, height=18)
-    
-    l_bch = tk.Label (root, text="BCH:", font=('Courier New', 10, 'bold'))
-    l_bch.place (x=coord_x + 550 , y=coord_y + 25, height=18)
-    
-    l_bch_adress = tk.Label (root, text="qzh286hdvn97hrxprlr6q8sqzrxgkselnqcg890a4x", font=('Courier New', 10, 'bold'))
-    l_bch_adress.place (x=coord_x + 600 , y=coord_y + 25, height=18)
-    
-    b_bch = tk.Button(root, text="Copy", font=('Courier New', 10, 'bold'), bg="#d0d0d0", command=c_bch)
-    b_bch.place (x=coord_x + 1030 , y=coord_y + 25, width=50, height=18)
-    
-    l_ltc = tk.Label (root, text="LTC:", font=('Courier New', 10, 'bold'))
-    l_ltc.place (x=coord_x + 550 , y=coord_y + 45, height=18)
-    
-    l_ltc_adress = tk.Label (root, text="LZPZ5KKb3tgoihPSEjnhbn8brggrsDEFnE", font=('Courier New', 10, 'bold'))
-    l_ltc_adress.place (x=coord_x + 600 , y=coord_y + 45, height=18)
-    
-    b_ltc = tk.Button(root, text="Copy", font=('Courier New', 10, 'bold'), bg="#d0d0d0", command=c_ltc)
-    b_ltc.place (x=coord_x + 1030 , y=coord_y + 45, width=50, height=18)
-
-    l_telegram = tk.Label (root, text="Telegram: @Frosti_ger", font=('Courier New', 10, 'bold'))
-    l_telegram.place (x=coord_x + 550 , y=coord_y + 65, height=18)
 
 # Load Keys when saved
 if 1==1:
