@@ -19,7 +19,7 @@ This is based on Frosti2020 version and it's still under construction and testin
 - Realtime Price
 - Some calculators for fast calculate
 - No unknown libraries
-- One File/Script `ETG_binance_v1_0.py` (easy to look over)
+- One File/Script `Chainstigma v0.1.py` (easy to look over)
 - loop Get order info and set trailing stop loss and take profit 
 
 
