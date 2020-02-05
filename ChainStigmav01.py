@@ -37,7 +37,7 @@ if 1==1:
     def asset_load():
 
         try:
-            save_file = open ("chain_binance.txt").read()
+            save_file = open ("etg_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -104,7 +104,7 @@ if 1==1:
     def asset_save():
         
         try:
-            save_file = open ("chain_binance.txt").read()
+            save_file = open ("etg_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -139,7 +139,7 @@ if 1==1:
             t_save.insert ("10.0", e_main_asset2.get() + "\n")
 
         # Save
-        new_save = open ("chain_binance.txt" , "w")
+        new_save = open ("etg_binance.txt" , "w")
         new_save.write (t_save.get("1.0", "13.0"))
         new_save.close()
 
@@ -255,9 +255,18 @@ if 1==1:
                 if the_price[-1] == ".":
                     the_price = the_price[:-1]
 
+                # Set price
                 e_price.delete (0, "end")
                 e_price.insert (0, the_price)
                 l_price_time.configure (text=time.strftime("%d.%m.%y %H:%M:%S"))
+
+                # Pass price to buy frame
+                e_trade_price_buy.delete(0, "end")
+                e_trade_price_buy.insert (0, e_price.get())
+
+                # Pass price to sell frame
+                e_trade_price_sell.delete(0, "end")
+                e_trade_price_sell.insert (0, e_price.get())
 
                 # Confirmation
                 bg_price.configure (bg="green")
@@ -283,13 +292,13 @@ if 1==1:
     b_price.place(x=coord_x + 10, y=coord_y + 10, width=50, height=50)
 
     e_price = tk.Entry(root, font=('Courier New', 14, 'bold'))
-    e_price.place(x=coord_x + 70, y=coord_y + 10, width=150, height=25)
+    e_price.place(x=coord_x + 70, y=coord_y + 25, width=150, height=25)
 
-    b_price_buy = tk.Button(root, text="BUY", command=set_price_buy)
-    b_price_buy.place(x=coord_x + 70, y=coord_y + 40, width=70, height=20)
+#    b_price_buy = tk.Button(root, text="BUY", command=set_price_buy)
+#    b_price_buy.place(x=coord_x + 70, y=coord_y + 40, width=70, height=20)
 
-    b_price_sell = tk.Button(root, text="SELL", command=set_price_sell)
-    b_price_sell.place(x=coord_x + 150, y=coord_y + 40, width=70, height=20)
+#    b_price_sell = tk.Button(root, text="SELL", command=set_price_sell)
+#    b_price_sell.place(x=coord_x + 150, y=coord_y + 40, width=70, height=20)
 
     l_price_time = tk.Label(root, text="00.00.00 00:00:00", font=('Courier New', 12, 'bold'), bg="#FFCC99", fg="#6f00ff")
     l_price_time.place (x=coord_x + 10, y=coord_y + 63, height=18)
@@ -464,7 +473,7 @@ if 1==1:
     l_funds_asset1_locked = tk.Label(root, text="Locked", font=('Courier New', 10, 'bold'), bg="#99CC99")
     l_funds_asset1_locked.place (x=coord_x + 10, y=coord_y + 55, height=20)
 
-    l_funds_asset1 = tk.Label(root, text="ETH", font=('Courier New', 14, 'bold'), bg="#99CC99")
+    l_funds_asset1 = tk.Label(root, text=start_asset1, font=('Courier New', 14, 'bold'), bg="#99CC99")
     l_funds_asset1.place(x=coord_x + 90, y=coord_y + 10, height=20)
 
     e_funds_asset1_free = tk.Entry(root, font=('Courier New', 10, 'bold'))
@@ -492,7 +501,7 @@ if 1==1:
     l_funds_asset2_locked = tk.Label(root, text="Locked", font=('Courier New', 10, 'bold'), bg="#99CC99")
     l_funds_asset2_locked.place (x=coord_x + 10, y=coord_y + 55, height=20)
 
-    l_funds_asset2 = tk.Label(root, text="USDT", font=('Courier New', 14, 'bold'), bg="#99CC99")
+    l_funds_asset2 = tk.Label(root, text=start_asset2, font=('Courier New', 14, 'bold'), bg="#99CC99")
     l_funds_asset2.place(x=coord_x + 90, y=coord_y + 10, height=20)
 
     e_funds_asset2_free = tk.Entry(root, font=('Courier New', 10, 'bold'))
@@ -501,7 +510,7 @@ if 1==1:
     e_funds_asset2_locked = tk.Entry(root, font=('Courier New', 10, 'bold'))
     e_funds_asset2_locked.place (x=coord_x + 90, y=coord_y + 55, width=200, height=18)
 
-# Calculator 1
+# % buy/sell order
 if 1==1:
 
     coord_x = 10
@@ -511,45 +520,64 @@ if 1==1:
     bg_cal1 = tk.Label (root,relief="ridge", bg="#A9E2F3")
     bg_cal1.place (x=coord_x, y=coord_y, width=230, height=80)
 
-    def cal1_price():
-        e_cal1_value1.delete (0, "end")
-        e_cal1_value1.insert (0, e_price.get())
-    def cal1_cal():
-
-        if e_cal1_value1.get() == "" or e_cal1_value2.get() == "":
+    def set_buy():
+        if e_setbuy.get() == "":
             return
-
-        cal1_result = "%.10f" % (float(e_cal1_value2.get()) * float(e_cal1_value1.get()))
+        neg_one = -1
+        setbuy_result = "%.10f" % (float(e_price.get()) / 100 * (float(e_setbuy.get()) * neg_one) + float(e_price.get()))
 
         # Max lenght 12 Char
-        while len(cal1_result) > 12:
-            cal1_result = cal1_result[:-1]
+        while len(setbuy_result) > 12:
+            setbuy_result = setbuy_result[:-1]
 
         # Cut Zero and point at end of price
-        while cal1_result[-1] == "0" and cal1_result.find(".") > -1:
+        while setbuy_result[-1] == "0" and setbuy_result.find(".") > -1:
             
-            cal1_result = cal1_result[:-1]
+            setbuy_result = setbuy_result[:-1]
 
-        if cal1_result[-1] == ".":
-            cal1_result = cal1_result[:-1]
+        if setbuy_result[-1] == ".":
+            setbuy_result = setbuy_result[:-1]
+        
+        e_trade_price_buy.delete(0, "end")
+        e_trade_price_buy.insert (0, setbuy_result)
+        
+    def set_sell():
+        if e_setsel.get() == "":
+            return
 
-        e_cal1_result.delete (0, "end")
-        e_cal1_result.insert (0, cal1_result)
+        setsel_result = "%.10f" % (float(e_price.get()) / 100 * float(e_setsel.get()) + float(e_price.get()))
 
-    b_cal1_price = tk.Button(root, text="Price", command=cal1_price)
-    b_cal1_price.place(x=coord_x + 10, y=coord_y + 10, width=50, height=20)
+        # Max lenght 12 Char
+        while len(setsel_result) > 12:
+            setsel_result = setsel_result[:-1]
 
-    b_cal1_cal = tk.Button(root, text="Cal", command=cal1_cal)
-    b_cal1_cal.place(x=coord_x + 10, y=coord_y + 35, width=50, height=35)
+        # Cut Zero and point at end of price
+        while setsel_result[-1] == "0" and setsel_result.find(".") > -1:
+            
+            setsel_result = setsel_result[:-1]
 
-    e_cal1_value1 = tk.Entry(root, font=('Courier New', 10, 'bold'))
-    e_cal1_value1.place(x=coord_x + 70, y=coord_y + 10, width=150, height=18)
+        if setsel_result[-1] == ".":
+            setsel_result = setsel_result[:-1]
+        
+        e_trade_price_sell.delete(0, "end")
+        e_trade_price_sell.insert (0, setsel_result)
 
-    e_cal1_value2 = tk.Entry(root, font=('Courier New', 10, 'bold'))
-    e_cal1_value2.place(x=coord_x + 70, y=coord_y + 30, width=150, height=18)
-    
-    e_cal1_result = tk.Entry(root, font=('Courier New', 12, 'bold'))
-    e_cal1_result.place(x=coord_x + 70, y=coord_y + 50, width=150, height=20)
+
+    label_percent = "%" + " for buy/sell order:"
+    l_calper_free = tk.Label(root, text=label_percent, font=('Courier New', 10, 'bold'), bg="#A9E2F3")
+    l_calper_free.place (x=coord_x + 10, y=coord_y + 2, height=20)
+
+    b_setbuy_price = tk.Button(root, text="Set to buy -", command=set_buy)
+    b_setbuy_price.place(x=coord_x + 10, y=coord_y + 25, width=70, height=20)    
+
+    b_setsel_price = tk.Button(root, text="Set to sell +", command=set_sell)
+    b_setsel_price.place(x=coord_x + 10, y=coord_y + 50, width=70, height=20)    
+
+    e_setbuy = tk.Entry(root, font=('Courier New', 12, 'bold'))
+    e_setbuy.place(x=coord_x + 90, y=coord_y + 25, width=100, height=20)
+
+    e_setsel = tk.Entry(root, font=('Courier New', 12, 'bold'))
+    e_setsel.place(x=coord_x + 90, y=coord_y + 50, width=100, height=20)
 
 # Calculator 2
 if 1==1:
@@ -1194,7 +1222,7 @@ if 1==1:
     t_log.tag_config ("bg_funds", background="#99CC99" )
     t_log.tag_config ("bg_cancel", background="#e7d7cc" )
 
-    #Temp Textfield for load chain_binance.txt
+    #Temp Textfield for load etg_binance.txt
     t_save = tk.Text (root)
 
 # Request Textfield
@@ -1221,7 +1249,7 @@ if 1==1:
     def keys_load():
 
         try:
-            save_file = open ("chain_binance.txt").read()
+            save_file = open ("etg_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -1242,7 +1270,7 @@ if 1==1:
     def keys_save():
     
         try:
-            save_file = open ("chain_binance.txt").read()
+            save_file = open ("etg_binance.txt").read()
 
             t_save.delete ("1.0", "end")
             t_save.insert ("1.0", save_file)
@@ -1257,7 +1285,7 @@ if 1==1:
         t_save.insert ("11.0", e_ak.get())
         t_save.insert ("12.0", e_sk.get())
 
-        new_save = open ("chain_binance.txt" , "w")
+        new_save = open ("etg_binance.txt" , "w")
         new_save.write (t_save.get("1.0", "13.0"))
         new_save.close()
 
