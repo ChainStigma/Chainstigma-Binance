@@ -8,7 +8,7 @@ import hmac
 
 # Config
 if 1==1:
-
+    global the_price
     start_asset1 = "BTC"
     start_asset2 = "USDT"
     
@@ -24,15 +24,15 @@ root.title ("ChainStigma Binance Trader")
 root.geometry ("1110x615")
 root.resizable(0, 0)
 
-# Main Assets
+# Main Assets - Price
 if 1==1:
     
     coord_x = 10
-    coord_y = 20
+    coord_y = 10
 
     # Background
     bg_main_asset = tk.Label (root, relief="ridge", bg="#559900")
-    bg_main_asset.place (x=coord_x, y=coord_y, width=200, height=65)
+    bg_main_asset.place (x=coord_x, y=coord_y, width=230, height=85)
 
     def asset_load():
 
@@ -151,97 +151,17 @@ if 1==1:
     e_main_asset2.place (x=coord_x + 110, y=coord_y + 35, width=75, height=20)
     e_main_asset2.insert (0, start_asset2)
 
-    b_main_asset_load = tk.Button (root, font=('Courier New', 10, 'bold'), text="NEXT", command=asset_load)
+    b_main_asset_load = tk.Button (root, text="Next", command=asset_load)
     b_main_asset_load.place (x=coord_x + 25, y=coord_y + 10, width=60, height=20)
 
-    b_main_asset_save = tk.Button (root, font=('Courier New', 10, 'bold'), text="SAVE", command=asset_save)
+    b_main_asset_save = tk.Button (root, text="Save", command=asset_save)
     b_main_asset_save.place (x=coord_x + 125, y=coord_y + 10, width=60, height=20)
 
-    l_next = tk.Label(root, text="0", font=('Courier New', 16, 'bold'),relief="ridge", bg="#66CCFF")
+    l_next = tk.Label(root, text="0",relief="ridge", bg="#66CCFF")
     l_next.place (x=coord_x + 92, y=coord_y + 5, width=26, height=26)
-
-
-# This block instead of here is to be moved under the trailing stop box. In this place is to be added real
-# Real time information about the stop loss and take profit and price
-#if 1==1:
-
-#    coord_x = 250
-#    coord_y = 20
-    
-    # Background
-#    bg_main_loop = tk.Label (root, relief="ridge", bg="#559900")
-#    bg_main_loop.place (x=coord_x, y=coord_y, width=200, height=65)
-
-#    class thread_start_price(Thread):
-#        def run(self):
-#            global running
-#            global running_cancel
-#            t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Started\n")
-#            while (running == True):
-#                url_price = "https://api.binance.com/api/v1/ticker/price?symbol=" + e_main_asset1.get().upper() + e_main_asset2.get().upper()
-#                    
-#                if (running_cancel == True):
-#                    t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Stopped\n")
-#                    loop_price.delete (0, "end")
-#                    break
-
-#                try:
-#                    r = requests.get(url=url_price, timeout=4)
-
-#                    the_price = r.json() ["price"]
-                
-                # Cut Zero and point at end of price
-#                    while the_price[-1] == "0":
-#                        the_price = the_price[:-1]
-#                    if the_price[-1] == ".":
-#                        the_price = the_price[:-1]
-
-#                    loop_price.delete (0, "end")
-#                    loop_price.insert (0, the_price)
-
-                # Confirmation
-#                    b_main_loop_start.configure (bg="green")
-#                    time.sleep (0.2)
-#                    b_main_loop_start.configure (bg="#FFCC99")
-
-#                    time.sleep(10)
-
-#                except Exception as e:
-#                    t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S") + "  <GET PRICE FAIL>\nEXCEPTION: " + str(e) + "\nRESPONSE: " + r.text + "\n\n")
-#                    break
-
-#    def get_price_start():
-#        global running
-#        global running_cancel
-#        running = True
-#        running_cancel = False
-#        price_start = thread_start_price()
-#        price_start.start()
-    
-#    def get_price_stop():
-#        global running
-#        global running_cancel
-#        running = False
-#        running_cancel = True
-
-#    b_main_loop_start = tk.Button (root, font=('Courier New', 10, 'bold'), text="START", command=get_price_start)
-#    b_main_loop_start.place (x=coord_x + 25, y=coord_y + 10, width=60, height=20)
-
-#    b_main_loop_stop = tk.Button (root, font=('Courier New', 10, 'bold'), text="STOP", command=get_price_stop)
-#    b_main_loop_stop.place (x=coord_x + 115, y=coord_y + 10, width=60, height=20)
-
-#    loop_price = tk.Entry(root, font=('Courier New', 14, 'bold'))
-#    loop_price.place(x=coord_x + 25, y=coord_y + 32, width=150, height=25)
 
 # Price
 if 1==1:
-
-    coord_x = 10
-    coord_y = 90
-    
-    # Background
-    bg_price = tk.Label (root,relief="ridge", bg="#FFCC99")
-    bg_price.place (x=coord_x, y=coord_y, width=230, height=85)
 
     class thread_get_price(Thread):
         def run(self):
@@ -262,7 +182,7 @@ if 1==1:
                 # Set price
                 e_price.delete (0, "end")
                 e_price.insert (0, the_price)
-                l_price_time.configure (text=time.strftime("%d.%m.%y %H:%M:%S"))
+                l_price.configure (text=e_price.get())
 
                 # Pass price to buy frame
                 e_trade_price_buy.delete(0, "end")
@@ -272,11 +192,6 @@ if 1==1:
                 e_trade_price_sell.delete(0, "end")
                 e_trade_price_sell.insert (0, e_price.get())
 
-                # Confirmation
-                bg_price.configure (bg="green")
-                time.sleep (0.2)
-                bg_price.configure (bg="#FFCC99")
-
             except Exception as e:
 
                 t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S") + "  <GET PRICE FAIL>\nEXCEPTION: " + str(e) + "\nRESPONSE: " + r.text + "\n\n")
@@ -285,27 +200,26 @@ if 1==1:
         tgp = thread_get_price()
         tgp.start()
         
-    def set_price_buy():
-        e_trade_price_buy.delete(0, "end")
-        e_trade_price_buy.insert (0, e_price.get())
-    def set_price_sell():
-        e_trade_price_sell.delete(0, "end")
-        e_trade_price_sell.insert (0, e_price.get())
+#    def set_price_buy():
+#        e_trade_price_buy.delete(0, "end")
+#        e_trade_price_buy.insert (0, e_price.get())
+#    def set_price_sell():
+#        e_trade_price_sell.delete(0, "end")
+#        e_trade_price_sell.insert (0, e_price.get())
 
     b_price = tk.Button(root, text="Price", command=get_price)
-    b_price.place(x=coord_x + 10, y=coord_y + 10, width=50, height=50)
+    b_price.place(x=coord_x + 25, y=coord_y + 60, width=60, height=20)
+
+    l_price = tk.Label(root, text="", bg="#99CC99")
+    l_price.place(x=coord_x + 90, y=coord_y + 60, width=95, height=20)
 
     e_price = tk.Entry(root, font=('Courier New', 14, 'bold'))
-    e_price.place(x=coord_x + 70, y=coord_y + 25, width=150, height=25)
-
-    l_price_time = tk.Label(root, text="00.00.00 00:00:00", font=('Courier New', 12, 'bold'), bg="#FFCC99", fg="#6f00ff")
-    l_price_time.place (x=coord_x + 10, y=coord_y + 63, height=18)
 
 # Asset1 Funds
 if 1==1:
 
     coord_x = 250
-    coord_y = 90
+    coord_y = 10
     
     # Background
     bg_asset1 = tk.Label (root,relief="ridge", bg="#99CC99")
@@ -484,7 +398,7 @@ if 1==1:
 if 1==1:
 
     coord_x = 560
-    coord_y = 90
+    coord_y = 10
     
     # Background
     bg_asset2 = tk.Label (root,relief="ridge", bg="#99CC99")
@@ -512,7 +426,7 @@ if 1==1:
 if 1==1:
 
     coord_x = 10
-    coord_y = 185
+    coord_y = 100
     
     # Background
     bg_cal1 = tk.Label (root,relief="ridge", bg="#A9E2F3")
@@ -581,13 +495,107 @@ if 1==1:
 if 1==1:
 
     coord_x = 10
-    coord_y = 275
+    coord_y = 190
     CheckTrail = 0
 
     # Background
     bg_cal2 = tk.Label (root,relief="ridge", bg="#A9E2F3")
-    bg_cal2.place (x=coord_x, y=coord_y, width=230, height=160)
+    bg_cal2.place (x=coord_x, y=coord_y, width=230, height=170)
 
+    class thread_start_price(Thread):
+        def run(self):
+            global running
+            global running_cancel
+            t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Started\n")
+            while (running == True):
+                url_price = "https://api.binance.com/api/v1/ticker/price?symbol=" + e_main_asset1.get().upper() + e_main_asset2.get().upper()
+                    
+                if (running_cancel == True):
+                    t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Stopped\n")
+                    l_active_price.configure (text="")
+                    break
+
+                try:
+                    r = requests.get(url=url_price, timeout=4)
+
+                    the_price = r.json() ["price"]
+                
+                # Cut Zero and point at end of price
+                    while the_price[-1] == "0":
+                        the_price = the_price[:-1]
+                    if the_price[-1] == ".":
+                        the_price = the_price[:-1]
+
+                    if e_limit.get() != "":
+                        set_limit = "%.10f" % (float(the_price) - float(the_price) / 100 * (float(e_limit.get())))
+                        # Max lenght 12 Char
+                        while len(set_limit) > 12:
+                            set_limit = set_limit[:-1]
+                        # Cut Zero and point at end of price
+                        while set_limit[-1] == "0" and set_limit.find(".") > -1:
+                            set_limit = set_limit[:-1]
+                        if set_limit[-1] == ".":
+                            set_limit = set_limit[:-1]
+                        l_active_limit.configure (text=set_limit)
+
+                    if e_stop.get() != "":
+                        set_stop = "%.10f" % (float(the_price) - float(the_price) / 100 * (float(e_stop.get())))
+                        # Max lenght 12 Char
+                        while len(set_stop) > 12:
+                            set_stop = set_stop[:-1]
+                        # Cut Zero and point at end of price
+                        while set_stop[-1] == "0" and set_stop.find(".") > -1:
+                            set_stop = set_stop[:-1]
+                        if set_stop[-1] == ".":
+                            set_stop = set_stop[:-1]
+                        l_active_stop.configure (text=set_stop)       
+                    
+                    l_active_price.configure (text=the_price)
+                    
+                    time.sleep(10)
+
+                except Exception as e:
+                    t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S") + "  <GET PRICE FAIL>\nEXCEPTION: " + str(e) + "\nRESPONSE: " + r.text + "\n\n")
+                    break
+
+    def get_price_start():
+        global running
+        global running_cancel
+        running = True
+        running_cancel = False
+        
+        if e_profit.get() != "":
+            t_request.insert ("1.0", "entering profit!")
+            set_profit = "%.10f" % (float(e_price.get()) + float(e_price.get()) / 100 * (float(e_profit.get())))
+            # Max lenght 12 Char
+            while len(set_profit) > 12:
+                set_profit = set_profit[:-1]
+            # Cut Zero and point at end of price
+            while set_profit[-1] == "0" and set_profit.find(".") > -1:
+                set_profit = set_profit[:-1]
+            if set_profit[-1] == ".":
+                set_profit = set_profit[:-1]
+            l_active_take.configure (text=set_profit)
+
+        if e_stop.get() != "":
+            set_stop = "%.10f" % (float(e_price.get()) / 100 * float(e_stop.get()) - float(e_price.get()))        
+        if (e_limit.get() == "" and e_stop.get() == "" and e_profit.get() == "" ):
+            l_message.configure (text="Need to fill at least one")
+        elif (e_limit.get() != "" and e_stop.get() == ""): 
+            l_message.configure (text="For a limit you need a stop")
+        elif (e_limit.get() > e_stop.get()):
+            l_message.configure (text="Stop needs to be higher  ")
+        else:
+            l_message.configure (text="")
+            price_start = thread_start_price()
+            price_start.start()
+    
+    def get_price_stop():
+        global running
+        global running_cancel
+        running = False
+        running_cancel = True
+ 
     def cal2_price():
         e_cal2_value1.delete (0, "end")
         e_cal2_value1.insert (0, e_price.get())
@@ -650,11 +658,49 @@ if 1==1:
     e_profit = tk.Entry(root, font=('Courier New', 10, 'bold'))
     e_profit.place(x=coord_x + 90, y=coord_y + 77, width=100, height=18)
 
+    b_main_loop_start = tk.Button (root, text="Start", command=get_price_start)
+    b_main_loop_start.place (x=coord_x + 10, y=coord_y + 107, width=60, height=20)
+
+    b_main_loop_stop = tk.Button (root, text="Stop", command=get_price_stop)
+    b_main_loop_stop.place (x=coord_x + 115, y=coord_y + 107, width=60, height=20)
+
+    l_message = tk.Label(root, text="None", font=('Courier New', 8, 'bold'), bg="#A9E2F3")
+    l_message.place(x=coord_x + 10, y=coord_y + 130, height=20)
+
+if 1==1:
+
+    coord_x = 10
+    coord_y = 370
+
+    # Background
+    bg_loop = tk.Label (root,relief="ridge")
+    bg_loop.place (x=coord_x, y=coord_y, width=850, height=90)
+
+    l_act_price = tk.Label(root, text="Current Price -> ", font=('Courier New', 10, 'bold'))
+    l_act_price.place(x=coord_x + 10, y=coord_y + 10, height=20)
+    l_active_price = tk.Label(root, text="", font=('Courier New', 10, 'bold'))
+    l_active_price.place(x=coord_x + 160, y=coord_y + 10, height=20)
+
+    l_act_limit = tk.Label(root, text="Current Limit -> ", font=('Courier New', 10, 'bold'))
+    l_act_limit.place(x=coord_x + 10, y=coord_y + 35, height=20)
+    l_active_limit = tk.Label(root, text="", font=('Courier New', 10, 'bold'))
+    l_active_limit.place(x=coord_x + 160, y=coord_y + 35, height=20)
+
+    l_act_stop = tk.Label(root, text="Current Stop  -> ", font=('Courier New', 10, 'bold'))
+    l_act_stop.place(x=coord_x + 10, y=coord_y + 60, height=20)
+    l_active_stop = tk.Label(root, text="", font=('Courier New', 10, 'bold'))
+    l_active_stop.place(x=coord_x + 160, y=coord_y + 60, height=20)
+
+    l_act_take = tk.Label(root, text="Take Profit Value -> ", font=('Courier New', 10, 'bold'))
+    l_act_take.place(x=coord_x + 300, y=coord_y + 10, height=20)
+    l_active_take = tk.Label(root, text="", font=('Courier New', 10, 'bold'))
+    l_active_take.place(x=coord_x + 500, y=coord_y + 10, height=20)
+
 # Trade buy
 if 1==1:
 
     coord_x = 250
-    coord_y = 185
+    coord_y = 100
 
     # Background
     bg_trade_buy = tk.Label (root,relief="ridge", bg=c_green)
@@ -698,7 +744,7 @@ if 1==1:
 if 1==1:
 
     coord_x = 560
-    coord_y = 185
+    coord_y = 100
 
     # Background
     bg_trade_sell = tk.Label (root,relief="ridge", bg=c_red)
@@ -814,7 +860,7 @@ if 1==1:
 if 1==1:
 
     coord_x = 250
-    coord_y = 300
+    coord_y = 215
 
     # Background
     bg_idinfo = tk.Label (root,relief="ridge", bg="#F5DA81")
@@ -926,7 +972,7 @@ if 1==1:
 if 1==1:
 
     coord_x = 560
-    coord_y = 300
+    coord_y = 215
 
     # Background
     bg_order_cancel = tk.Label (root,relief="ridge", bg="#e7d7cc")
@@ -1012,7 +1058,7 @@ if 1==1:
 if 1==1:
 
     coord_x = 560
-    coord_y = 350
+    coord_y = 265
 
     # Background
     bg_allorder = tk.Label (root,relief="ridge", bg="#F5DA81")
@@ -1095,7 +1141,7 @@ if 1==1:
 if 1==1:
 
     coord_x = 560
-    coord_y = 400
+    coord_y = 315
 
     # Background
     bg_timesync = tk.Label (root,relief="ridge", bg="#F5DA81")
@@ -1186,7 +1232,7 @@ if 1==1:
 if 1==1:
 
     t_request = tk.Text (root,  font=('Courier New', 9, 'bold'), bg="#d0d0d0")
-    t_request.place(x=10, y=455, width=850, height=150)
+    t_request.place(x=10, y=465, width=850, height=140)
 
 # Keys
 if 1==1:
