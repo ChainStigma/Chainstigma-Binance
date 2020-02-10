@@ -506,15 +506,13 @@ if 1==1:
         def run(self):
             global running
             global running_cancel
+            global set_stop
+            global set_profit
+            global set_limit
             t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Started\n")
             while (running == True):
                 url_price = "https://api.binance.com/api/v1/ticker/price?symbol=" + e_main_asset1.get().upper() + e_main_asset2.get().upper()
                     
-                if (running_cancel == True):
-                    t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Stopped\n")
-                    l_active_price.configure (text="")
-                    break
-
                 try:
                     r = requests.get(url=url_price, timeout=4)
 
@@ -525,34 +523,26 @@ if 1==1:
                         the_price = the_price[:-1]
                     if the_price[-1] == ".":
                         the_price = the_price[:-1]
-
-                    if e_limit.get() != "":
-                        set_limit = "%.10f" % (float(the_price) - float(the_price) / 100 * (float(e_limit.get())))
-                        # Max lenght 12 Char
-                        while len(set_limit) > 12:
-                            set_limit = set_limit[:-1]
-                        # Cut Zero and point at end of price
-                        while set_limit[-1] == "0" and set_limit.find(".") > -1:
-                            set_limit = set_limit[:-1]
-                        if set_limit[-1] == ".":
-                            set_limit = set_limit[:-1]
-                        l_active_limit.configure (text=set_limit)
-
-                    if e_stop.get() != "":
-                        set_stop = "%.10f" % (float(the_price) - float(the_price) / 100 * (float(e_stop.get())))
-                        # Max lenght 12 Char
-                        while len(set_stop) > 12:
-                            set_stop = set_stop[:-1]
-                        # Cut Zero and point at end of price
-                        while set_stop[-1] == "0" and set_stop.find(".") > -1:
-                            set_stop = set_stop[:-1]
-                        if set_stop[-1] == ".":
-                            set_stop = set_stop[:-1]
-                        l_active_stop.configure (text=set_stop)       
-                    
+    
                     l_active_price.configure (text=the_price)
+
+                # without trailing
+                    # without limit
+                    if the_price == set_stop:
+                        continue
+
+                     
                     
-                    time.sleep(10)
+                        
+                    time.sleep(2)
+                   
+                    if (running_cancel == True):
+                        t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S")  + "  Auto Stopped\n")
+                        l_active_price.configure (text="")
+                        l_active_stop.configure (text="")
+                        l_active_limit.configure (text="")
+                        l_active_take.configure (text="")
+                        break
 
                 except Exception as e:
                     t_request.insert ("1.0", time.strftime("%d.%m.%y %H:%M:%S") + "  <GET PRICE FAIL>\nEXCEPTION: " + str(e) + "\nRESPONSE: " + r.text + "\n\n")
@@ -561,11 +551,45 @@ if 1==1:
     def get_price_start():
         global running
         global running_cancel
+        global set_profit
+        global set_stop
+        global set_limit
         running = True
         running_cancel = False
-        
+    
+    # Set the three limits in the text indicators. The calculations will be inside the thread
+    # Set limit value
+        if e_limit.get() != "":
+            set_limit = "%.10f" % (float(e_price.get()) - float(e_price.get()) / 100 * (float(e_limit.get())))
+            # Max lenght 12 Char
+            while len(set_limit) > 12:
+                set_limit = set_limit[:-1]
+            # Cut Zero and point at end of price
+            while set_limit[-1] == "0" and set_limit.find(".") > -1:
+                set_limit = set_limit[:-1]
+            if set_limit[-1] == ".":
+                set_limit = set_limit[:-1]
+            l_active_limit.configure (text=set_limit)
+        else:
+            set_limit = 0
+
+    # Set stop value
+        if e_stop.get() != "":
+            set_stop = "%.10f" % (float(e_price.get()) - float(e_price.get()) / 100 * (float(e_stop.get())))
+            # Max lenght 12 Char
+            while len(set_stop) > 12:
+                set_stop = set_stop[:-1]
+            # Cut Zero and point at end of price
+            while set_stop[-1] == "0" and set_stop.find(".") > -1:
+               set_stop = set_stop[:-1]
+            if set_stop[-1] == ".":
+                set_stop = set_stop[:-1]
+            l_active_stop.configure (text=set_stop)
+        else:
+            set_stop = 0
+
+    # Set Profit Value
         if e_profit.get() != "":
-            t_request.insert ("1.0", "entering profit!")
             set_profit = "%.10f" % (float(e_price.get()) + float(e_price.get()) / 100 * (float(e_profit.get())))
             # Max lenght 12 Char
             while len(set_profit) > 12:
@@ -576,17 +600,20 @@ if 1==1:
             if set_profit[-1] == ".":
                 set_profit = set_profit[:-1]
             l_active_take.configure (text=set_profit)
-
-        if e_stop.get() != "":
-            set_stop = "%.10f" % (float(e_price.get()) / 100 * float(e_stop.get()) - float(e_price.get()))        
-        if (e_limit.get() == "" and e_stop.get() == "" and e_profit.get() == "" ):
-            l_message.configure (text="Need to fill at least one")
-        elif (e_limit.get() != "" and e_stop.get() == ""): 
-            l_message.configure (text="For a limit you need a stop")
-        elif (e_limit.get() > e_stop.get()):
-            l_message.configure (text="Stop needs to be higher  ")
         else:
-            l_message.configure (text="")
+            set_profit = 0
+            
+        t_request.insert ("1.0", "profit -> " + str(set_profit)+"\n")
+        t_request.insert ("1.0", "limit -> " + str(set_limit)+"\n")
+        t_request.insert ("1.0", "stop -> " + str(set_stop)+"\n")
+
+        if (e_limit.get() == "" and e_stop.get() == "" and e_profit.get() == "" ):
+            t_request.insert ("1.0",  time.strftime("%d.%m.%y %H:%M:%S") + " ==> At least one needs to be fill to start autoloop <==\n")
+        elif (e_limit.get() != "" and e_stop.get() == ""): 
+            t_request.insert ("1.0",  time.strftime("%d.%m.%y %H:%M:%S") + " ==> TO put a limit you need a stop <==\n")
+        elif (e_limit.get() > e_stop.get()):
+            t_request.insert ("1.0",  time.strftime("%d.%m.%y %H:%M:%S") + " ==> Limit needs to be higher than Stop <==\n  ")
+        else:
             price_start = thread_start_price()
             price_start.start()
     
@@ -658,14 +685,16 @@ if 1==1:
     e_profit = tk.Entry(root, font=('Courier New', 10, 'bold'))
     e_profit.place(x=coord_x + 90, y=coord_y + 77, width=100, height=18)
 
+    l_timing = tk.Label(root, text="Loop Timer: ", font=('Courier New', 10, 'bold'), bg="#A9E2F3")
+    l_timing.place(x=coord_x + 10, y=coord_y + 100,height=20)
+    e_timing = tk.Entry(root, font=('Courier New', 10, 'bold'))
+    e_timing.place(x=coord_x + 120, y=coord_y + 100, width=40, height=18)
+
     b_main_loop_start = tk.Button (root, text="Start", command=get_price_start)
-    b_main_loop_start.place (x=coord_x + 10, y=coord_y + 107, width=60, height=20)
+    b_main_loop_start.place (x=coord_x + 10, y=coord_y + 140, width=60, height=20)
 
     b_main_loop_stop = tk.Button (root, text="Stop", command=get_price_stop)
-    b_main_loop_stop.place (x=coord_x + 115, y=coord_y + 107, width=60, height=20)
-
-    l_message = tk.Label(root, text="None", font=('Courier New', 8, 'bold'), bg="#A9E2F3")
-    l_message.place(x=coord_x + 10, y=coord_y + 130, height=20)
+    b_main_loop_stop.place (x=coord_x + 160, y=coord_y + 140, width=60, height=20)
 
 if 1==1:
 
